@@ -26,6 +26,7 @@ public class Main {
         scn.close();
     }
 
+    @SuppressWarnings("unused")
     static int switchEx(int[] input) throws Exception {
         switch (input.length) {
             case 2:
