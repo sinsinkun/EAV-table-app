@@ -56,7 +56,7 @@ public class EavInterface {
     }
 
     public List<EavAttribute> getAttributes(EavEntity entity) {
-        String query = "SELECT * FROM " + attributeTable + " WHERE entity_type_id = " + entity.getEntity_type_id();
+        String query = "SELECT * FROM " + attributeTable + " WHERE entity_type_id = " + entity.getEntityTypeId();
         return conn.createQuery(query).executeAndFetch(EavAttribute.class);
     }
 

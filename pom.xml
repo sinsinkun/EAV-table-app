@@ -15,14 +15,22 @@
             <version>8.0.33</version>
         </dependency>
         <dependency>
+            <!-- Helper for connecting to mysql -->
             <groupId>org.sql2o</groupId>
             <artifactId>sql2o</artifactId>
             <version>1.8.0</version>
         </dependency>
         <dependency>
+            <!-- Helper for generating getters/setters -->
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.34</version>
+        </dependency>
+        <dependency>
+            <!-- Helper for converting table columns to camelCase params -->
+            <groupId>javax.persistence</groupId>
+            <artifactId>javax.persistence-api</artifactId>
+            <version>2.2</version>
         </dependency>
     </dependencies>
 
