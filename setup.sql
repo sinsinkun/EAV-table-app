@@ -247,7 +247,7 @@ order by eet.id, ea.id;
 create view all_possible_eav_data as 
 select eet.id as entity_type_id, eet.entity_type, ee.id as entity_id, ee.entity,
 ea.id as attr_id, ea.attr, ea.value_type, ea.allow_multiple,
-ev.id, ev.created_at, ev.value_str, ev.value_int, ev.value_float, ev.value_time, ev.value_bool 
+ev.id as value_id, ev.created_at, ev.value_str, ev.value_int, ev.value_float, ev.value_time, ev.value_bool 
 from eav_entity_types eet
 left join eav_entities ee on eet.id = entity_type_id 
 left join eav_attrs ea on ea.entity_type_id = eet.id 
@@ -255,9 +255,11 @@ left join eav_values ev on ee.id = ev.entity_id and ea.id = ev.attr_id
 order by eet.id, ee.id;
 
 
--- all_eav_entries view
+-- all existing EAV entries
 create view all_existing_eav_data as
-select eet.entity_type, ee.entity, ea.attr, ea.value_type, ev.* 
+select eet.id as entity_type_id, eet.entity_type, ee.id as entity_id, ee.entity,
+ea.id as attr_id, ea.attr, ea.value_type, ea.allow_multiple,
+ev.id as value_id, ev.created_at, ev.value_str, ev.value_int, ev.value_float, ev.value_time, ev.value_bool 
 from eav_values ev
 left join eav_entities ee on ev.entity_id = ee.id
 left join eav_entity_types eet on eet.id = ee.entity_type_id
