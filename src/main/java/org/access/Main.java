@@ -1,4 +1,6 @@
-package org.example;
+package org.access;
+
+import org.util.Fn;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -8,15 +10,15 @@ public class Main {
     public static void main(String[] args) {
         int x = 1;
         float y = 2;
-        float z = Util.add(x, y);
+        float z = Fn.add(x, y);
         float[] f = { 3, 2, 1 };
         for (int i = 0; i < f.length; i++) {
-            f[i] = Util.add(z, i);
+            f[i] = Fn.add(z, i);
             if (f[i] == 12) break;
         }
         Instant now = Instant.now();
         now.toEpochMilli();
-        System.out.println("Hello world " + Util.add(z, y) + " " + Util.add(z, z) + " " + Arrays.toString(f));
+        System.out.println("Hello world " + Fn.add(z, y) + " " + Fn.add(z, z) + " " + Arrays.toString(f));
 
         Scanner scn = new Scanner(System.in);
         System.out.print("Enter name: ");
@@ -32,7 +34,7 @@ public class Main {
             case 2:
             case 3:
             case 4:
-                return Util.add(input[0], input[1]);
+                return Fn.add(input[0], input[1]);
             default:
                 throw new Exception("Input length unexpected");
         }
