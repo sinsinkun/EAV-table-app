@@ -4,10 +4,10 @@ import java.util.List;
 
 public class DBExecutor {
     public static void main(String[] args) {
-        Database db = new Database();
-
-        List<EavData> eavData = db.fetchAllEav();
-        System.out.println(eavData.get(8).print());
-
+        DBInterface<EavData> eavInterface = new DBInterface<>(EavData.class, "localhost:3306", "localdb");
+        List<EavData> output = eavInterface.get("all_existing_eav_data");
+        for (EavData data : output) {
+            System.out.println(data.print());
+        }
     }
 }

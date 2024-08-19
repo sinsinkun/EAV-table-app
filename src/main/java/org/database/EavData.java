@@ -1,17 +1,21 @@
 package org.database;
 
 public class EavData {
+    public Integer entity_type_id;
     public String entity_type;
+    public Integer entity_id;
     public String entity;
+    public Integer attr_id;
     public String attr;
-    public int value_id;
+    public Integer id;
     public String created_at;
     public String value_type;
+    public Boolean allow_multiple;
     public String value_str;
-    public int value_int;
-    public float value_float;
+    public Integer value_int;
+    public Float value_float;
     public String value_time;
-    public boolean value_bool;
+    public Boolean value_bool;
 
     public String print() {
         String out = "EavData: {\n";
@@ -19,15 +23,16 @@ public class EavData {
         out += "  entity_type: " + entity_type + ",\n"
                 + "  entity: " + entity + ",\n"
                 + "  attr: " + attr + ",\n"
-                + "  value_type: " + value_type + ",\n";
+                + "  value_type: " + value_type + ",\n"
+                + "  allow_multiple: " + allow_multiple + ",\n";
 
         // if no value id, then exit early
-        if (value_id == 0) {
+        if (id == null) {
             out += "}\n";
             return out;
         }
 
-        out += "  value_id: " + value_id + ",\n"
+        out += "  value_id: " + id + ",\n"
                 + "  created_at: " + created_at + ",\n";
 
         switch (value_type) {
