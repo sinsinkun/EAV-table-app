@@ -338,6 +338,11 @@ public class EavInterface {
 
     // region view
     public List<EavView> getEverything() {
+        String query = "SELECT * FROM all_possible_eav_data";
+        return conn.createQuery(query).executeAndFetch(EavView.class);
+    }
+
+    public List<EavView> getEveryValue() {
         String query = "SELECT * FROM all_existing_eav_data";
         return conn.createQuery(query).executeAndFetch(EavView.class);
     }
