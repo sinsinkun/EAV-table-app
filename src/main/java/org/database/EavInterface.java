@@ -1,5 +1,6 @@
 package org.database;
 
+import java.util.Collection;
 import java.util.List;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
@@ -27,7 +28,6 @@ public class EavInterface {
         }
     }
 
-    // region getters
     public <T> List<T> get(Class<T> schema, String target) {
         if (target.isEmpty()) {
             throw new IllegalArgumentException("Query target not provided");
@@ -36,11 +36,24 @@ public class EavInterface {
         return conn.createQuery(query).executeAndFetch(schema);
     }
 
+    // region entityType
     public List<EavEntityType> getEntityTypes() {
         String query = "SELECT * FROM " + entityTypeTable;
         return conn.createQuery(query).executeAndFetch(EavEntityType.class);
     }
 
+    public boolean deleteEntityType(EavEntityType entityType) {
+        String query1 = "DELETE FROM " + entityTypeTable + " WHERE id = :id";
+        int results = conn.createQuery(query1)
+                .addParameter("id", entityType.getId())
+                .executeUpdate()
+                .getResult();
+
+        return results > 0;
+    }
+    // endregion entityType
+
+    // region entity
     public List<EavEntity> getEntities() {
         String query = "SELECT * FROM " + entityTable;
         return conn.createQuery(query).executeAndFetch(EavEntity.class);
@@ -51,28 +64,6 @@ public class EavInterface {
         return conn.createQuery(query).executeAndFetch(EavEntity.class);
     }
 
-    public List<EavAttribute> getAttributes(EavEntityType entityType) {
-        String query = "SELECT * FROM " + attributeTable + " WHERE entity_type_id = " + entityType.getId();
-        return conn.createQuery(query).executeAndFetch(EavAttribute.class);
-    }
-
-    public List<EavAttribute> getAttributes(EavEntity entity) {
-        String query = "SELECT * FROM " + attributeTable + " WHERE entity_type_id = " + entity.getEntityTypeId();
-        return conn.createQuery(query).executeAndFetch(EavAttribute.class);
-    }
-
-    public List<EavValue> getValues(EavEntity entity) {
-        String query = "SELECT * FROM " + valueTable + " WHERE entity_id = " + entity.getId();
-        return conn.createQuery(query).executeAndFetch(EavValue.class);
-    }
-
-    public List<EavView> getEverything() {
-        String query = "SELECT * FROM all_existing_eav_data";
-        return conn.createQuery(query).executeAndFetch(EavView.class);
-    }
-    // endregion getters
-
-    // region setters
     public Tuple<EavEntityType, EavEntity> createEntity(String entity_type, String entity) {
         if (entity.isEmpty() || entity_type.isEmpty()) {
             throw new IllegalArgumentException("Err: parameters cannot be empty");
@@ -105,9 +96,161 @@ public class EavInterface {
         return new Tuple<>(list_a.get(0), list_b.get(0));
     }
 
+    public boolean deleteEntity(EavEntity entity) {
+        // delete all values for entity
+        String query1 = "DELETE FROM " + valueTable + " WHERE entity_id = :entity_id";
+        int results = conn.createQuery(query1)
+                .addParameter("entity_id", entity.getId())
+                .executeUpdate()
+                .getResult();
+        System.out.println("Deleted values: " + results);
+        // delete entity
+        String query2 = "DELETE FROM " + entityTable + " WHERE id = :entity_id";
+        int results2 = conn.createQuery(query2)
+                .addParameter("entity_id", entity.getId())
+                .executeUpdate()
+                .getResult();
+        System.out.println("Deleted entity: " + results2);
+
+        return results2 > 0;
+    }
+
+    public boolean deleteEntities(Collection<EavEntity> entities) {
+        if (entities.isEmpty()) {
+            return true;
+        }
+
+        StringBuilder idList = new StringBuilder();
+        for (EavEntity e : entities) {
+            idList.append(e.getId()).append(",");
+        }
+        idList.deleteCharAt(idList.length() - 1);
+
+        // delete all values for entities
+        String query1 = "DELETE FROM " + valueTable + " WHERE entity_id IN (:entity_ids)";
+        int results = conn.createQuery(query1)
+                .addParameter("entity_ids", idList)
+                .executeUpdate()
+                .getResult();
+        System.out.println("Deleted values: " + results);
+        // delete entity
+        String query2 = "DELETE FROM " + entityTable + " WHERE id IN (:entity_ids)";
+        int results2 = conn.createQuery(query2)
+                .addParameter("entity_ids", idList)
+                .executeUpdate()
+                .getResult();
+        System.out.println("Deleted entities: " + results2);
+
+        return results2 > 0;
+    }
+    // endregion entity
+
+    // region attribute
+    public List<EavAttribute> getAttributes(EavEntityType entityType) {
+        String query = "SELECT * FROM " + attributeTable + " WHERE entity_type_id = " + entityType.getId();
+        return conn.createQuery(query).executeAndFetch(EavAttribute.class);
+    }
+
+    public List<EavAttribute> getAttributes(EavEntity entity) {
+        String query = "SELECT * FROM " + attributeTable + " WHERE entity_type_id = " + entity.getEntityTypeId();
+        return conn.createQuery(query).executeAndFetch(EavAttribute.class);
+    }
+
     public EavAttribute createAttribute(EavEntity entity, EavAttribute attribute) {
         // todo: call create_eav_attr(:entity_id, :attr)
         return attribute;
     }
-    // endregion setters
+
+    public boolean deleteAttribute(EavAttribute attribute) {
+        // delete all values for attribute
+        String query1 = "DELETE FROM " + valueTable + " WHERE attr_id = :attr_id";
+        int results = conn.createQuery(query1)
+                .addParameter("attr_id", attribute.getId())
+                .executeUpdate()
+                .getResult();
+        System.out.println("Deleted values: " + results);
+        // delete attribute
+        String query2 = "DELETE FROM " + attributeTable + " WHERE id = :attr_id";
+        int results2 = conn.createQuery(query2)
+                .addParameter("attr_id", attribute.getId())
+                .executeUpdate()
+                .getResult();
+        System.out.println("Deleted attribute: " + results2);
+
+        return results2 > 0;
+    }
+
+    public boolean deleteAttributes(Collection<EavAttribute> attributes) {
+        if (attributes.isEmpty()) {
+            return true;
+        }
+
+        StringBuilder idList = new StringBuilder();
+        for (EavAttribute a : attributes) {
+            idList.append(a.getId()).append(",");
+        }
+        idList.deleteCharAt(idList.length() - 1);
+
+        // delete all values for entities
+        String query1 = "DELETE FROM " + valueTable + " WHERE attr_id IN (:attr_ids)";
+        int results = conn.createQuery(query1)
+                .addParameter("attr_ids", idList)
+                .executeUpdate()
+                .getResult();
+        System.out.println("Deleted values: " + results);
+        // delete entity
+        String query2 = "DELETE FROM " + attributeTable + " WHERE id IN (:attr_ids)";
+        int results2 = conn.createQuery(query2)
+                .addParameter("attr_ids", idList)
+                .executeUpdate()
+                .getResult();
+        System.out.println("Deleted attributes: " + results2);
+
+        return results2 > 0;
+    }
+    // endregion attribute
+
+    // region value
+    public List<EavValue> getValues(EavEntity entity) {
+        String query = "SELECT * FROM " + valueTable + " WHERE entity_id = " + entity.getId();
+        return conn.createQuery(query).executeAndFetch(EavValue.class);
+    }
+
+    public boolean deleteValue(EavValue value) {
+        String query1 = "DELETE FROM " + valueTable + " WHERE entity_id = :value_id";
+        int result = conn.createQuery(query1)
+                .addParameter("entity_id", value.getId())
+                .executeUpdate()
+                .getResult();
+
+        return result > 0;
+    }
+
+    public boolean deleteValues(Collection<EavValue> values) {
+        if (values.isEmpty()) {
+            return true;
+        }
+
+        StringBuilder idList = new StringBuilder();
+        for (EavValue v : values) {
+            idList.append(v.getId()).append(",");
+        }
+        idList.deleteCharAt(idList.length() - 1);
+
+        String query1 = "DELETE FROM " + valueTable + " WHERE id IN (:ids)";
+        int results = conn.createQuery(query1)
+                .addParameter("ids", idList)
+                .executeUpdate()
+                .getResult();
+
+        return results > 0;
+    }
+    // endregion value
+
+    // region view
+    public List<EavView> getEverything() {
+        String query = "SELECT * FROM all_existing_eav_data";
+        return conn.createQuery(query).executeAndFetch(EavView.class);
+    }
+    // endregion view
 }
