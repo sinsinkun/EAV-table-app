@@ -5,6 +5,10 @@ import lombok.EqualsAndHashCode;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode
@@ -37,4 +41,15 @@ public class EavValue {
 
     @Column(name = "value_bool")
     private Boolean valueBool = null;
+
+    public Instant getValueTime() {
+        if (valueTime.isEmpty()) return null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        LocalDateTime localDateTime = LocalDateTime.parse(valueTime, formatter);
+        return localDateTime.toInstant(ZoneOffset.UTC);
+    }
+
+    public void setValueTime(Instant i) {
+        valueTime = i.toString();
+    }
 }

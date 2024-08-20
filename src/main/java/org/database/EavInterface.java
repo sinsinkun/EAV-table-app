@@ -1,7 +1,9 @@
 package org.database;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 
@@ -36,6 +38,10 @@ public class EavInterface {
         return conn.createQuery(query).executeAndFetch(schema);
     }
 
+    private Integer getLastId() {
+        return conn.createQuery("SELECT last_insert_id();").executeAndFetchFirst(Integer.class);
+    }
+
     // region entityType
     public List<EavEntityType> getEntityTypes() {
         String query = "SELECT * FROM " + entityTypeTable;
@@ -64,11 +70,17 @@ public class EavInterface {
         return conn.createQuery(query).executeAndFetch(EavEntity.class);
     }
 
+    public EavEntity getEntityById(int entityId) {
+        String query = "SELECT * FROM " + entityTable + " WHERE id = :id";
+        return conn.createQuery(query)
+                .addParameter("id", entityId)
+                .executeAndFetchFirst(EavEntity.class);
+    }
+
     public EavEntity createEntity(String entity_type, String entity) {
         if (entity.isEmpty() || entity_type.isEmpty()) {
             throw new IllegalArgumentException("Err: parameters cannot be empty");
         }
-
         String query = "CALL create_eav_entity(:entity_type, :entity);";
         conn.createQuery(query)
                 .addParameter("entity_type", entity_type)
@@ -156,18 +168,26 @@ public class EavInterface {
         return conn.createQuery(query).executeAndFetch(EavAttribute.class);
     }
 
-    public EavAttribute createAttribute(EavEntity entity, String attributeName, String attributeType, boolean allowMultiple) {
-        if (entity == null || attributeName.isEmpty() || attributeType.isEmpty()) {
+    public EavAttribute getAttributeById(int attrId) {
+        String query = "SELECT * FROM " + attributeTable + " WHERE id = :id";
+        return conn.createQuery(query)
+                .addParameter("id", attrId)
+                .executeAndFetchFirst(EavAttribute.class);
+    }
+
+    public EavAttribute createAttribute(EavEntity entity, String attributeName, ValueType attributeType, boolean allowMultiple) {
+        if (entity == null || attributeName.isEmpty() || attributeType == null) {
             throw new IllegalArgumentException("Err: invalid parameters");
         }
         String query = "CALL create_eav_attr(:attr, :attr_type, :entity_type_id, :allow_multiple);";
-        return (EavAttribute) conn.createQuery(query)
+        conn.createQuery(query)
                 .addParameter("attr", attributeName)
-                .addParameter("attr_type", attributeType)
+                .addParameter("attr_type", attributeType.getValue())
                 .addParameter("entity_type_id", entity.getEntityTypeId())
                 .addParameter("allow_multiple", allowMultiple)
-                .executeUpdate()
-                .getKey();
+                .executeUpdate();
+
+        return getAttributeById(getLastId());
     }
 
     public boolean deleteAttribute(EavAttribute attribute) {
@@ -225,6 +245,13 @@ public class EavInterface {
         return conn.createQuery(query).executeAndFetch(EavValue.class);
     }
 
+    public EavValue getValueById(int valueId) {
+        String query = "SELECT * FROM " + valueTable + " WHERE id = :id";
+        return conn.createQuery(query)
+                .addParameter("id", valueId)
+                .executeAndFetchFirst(EavValue.class);
+    }
+
     public EavValue createValue(EavEntity entity, EavAttribute attribute, Object value) {
         if (entity.getId() == 0 || attribute.getId() == 0 || entity.getEntityTypeId() != attribute.getEntityTypeId()) {
             throw new IllegalArgumentException("Err: invalid parameters");
@@ -233,18 +260,21 @@ public class EavInterface {
         String v1 = null;
         Integer v2 = null;
         Float v3 = null;
-        String v4 = null;
+        Instant v4 = null;
         Boolean v5 = null;
 
         // fill value
-        if (value.getClass() == String.class && attribute.getValueType().equals("str")) v1 = (String) value;
-        if (value.getClass() == Integer.class && attribute.getValueType().equals("int")) v2 = (Integer) value;
-        if (value.getClass() == Float.class && attribute.getValueType().equals("float")) v3 = (Float) value;
-        if (value.getClass() == String.class && attribute.getValueType().equals("time")) v4 = (String) value;
-        if (value.getClass() == Boolean.class && attribute.getValueType().equals("bool")) v5 = (Boolean) value;
+        if (value instanceof String && attribute.getValueType() == ValueType.STR) v1 = (String) value;
+        else if (value instanceof Integer && attribute.getValueType() == ValueType.INT) v2 = (Integer) value;
+        else if (value instanceof Float && attribute.getValueType() == ValueType.FLOAT) v3 = (Float) value;
+        else if (value instanceof Instant && attribute.getValueType() == ValueType.TIME) v4 = (Instant) value;
+        else if (value instanceof Boolean && attribute.getValueType() == ValueType.BOOL) v5 = (Boolean) value;
+        else {
+            throw new IllegalArgumentException("Err: invalid value provided");
+        }
 
         String query = "CALL create_eav_value(:entity_id, :attr_id, :v1, :v2, :v3, :v4, :v5);";
-        return (EavValue) conn.createQuery(query)
+        conn.createQuery(query)
                 .addParameter("entity_id", entity.getId())
                 .addParameter("attr_id", attribute.getId())
                 .addParameter("v1", v1)
@@ -252,9 +282,10 @@ public class EavInterface {
                 .addParameter("v3", v3)
                 .addParameter("v4", v4)
                 .addParameter("v5", v5)
-                .addParameter("entity", entity)
                 .executeUpdate()
                 .getKey();
+
+        return getValueById(getLastId());
     }
 
     public boolean deleteValue(EavValue value) {

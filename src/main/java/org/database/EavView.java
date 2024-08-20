@@ -2,6 +2,8 @@ package org.database;
 
 import lombok.Data;
 
+import java.time.Instant;
+
 @Data
 public class EavView {
     // entity related
@@ -22,6 +24,6 @@ public class EavView {
     private String  value_str   = null;
     private Integer value_int   = null;
     private Float   value_float = null;
-    private String  value_time  = null;
+    private Instant value_time  = null;
     private Boolean value_bool  = null;
 }
