@@ -48,6 +48,23 @@ public class EavInterface {
         return conn.createQuery(query).executeAndFetch(EavEntityType.class);
     }
 
+    public EavEntityType getEntityTypeById(int id) {
+        String query = "SELECT * FROM " + entityTypeTable + " WHERE id = :id";
+        return conn.createQuery(query)
+                .addParameter("id", id)
+                .executeAndFetchFirst(EavEntityType.class);
+    }
+
+    public EavEntityType createEntityType(String name) {
+        String query = "INSERT INTO " + entityTypeTable + " (entity_type, fake_col) "
+                + "VALUES (:entity_type, 123)";
+        conn.createQuery(query)
+                .addParameter("entity_type", name)
+                .executeUpdate();
+
+        return getEntityTypeById(getLastId());
+    }
+
     public boolean deleteEntityType(EavEntityType entityType) {
         String query1 = "DELETE FROM " + entityTypeTable + " WHERE id = :id";
         int results = conn.createQuery(query1)

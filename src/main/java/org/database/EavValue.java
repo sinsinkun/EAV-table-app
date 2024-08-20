@@ -10,6 +10,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 
+@SuppressWarnings("unused")
 @Data
 @EqualsAndHashCode
 @Table(name = "eav_values")
