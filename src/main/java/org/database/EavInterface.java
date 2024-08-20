@@ -26,6 +26,7 @@ public class EavInterface {
                 "root", "password"
         );
         try (Connection c = db.open()) {
+            c.setRollbackOnException(false);
             conn = c;
         }
     }
@@ -56,8 +57,8 @@ public class EavInterface {
     }
 
     public EavEntityType createEntityType(String name) {
-        String query = "INSERT INTO " + entityTypeTable + " (entity_type, fake_col) "
-                + "VALUES (:entity_type, 123)";
+        String query = "INSERT INTO " + entityTypeTable + " (entity_type) "
+                + "VALUES (:entity_type)";
         conn.createQuery(query)
                 .addParameter("entity_type", name)
                 .executeUpdate();
