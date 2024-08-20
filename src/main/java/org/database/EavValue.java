@@ -44,7 +44,7 @@ public class EavValue {
     private Boolean valueBool = null;
 
     public Instant getValueTime() {
-        if (valueTime.isEmpty()) return null;
+        if (valueTime == null || valueTime.isEmpty()) return null;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         LocalDateTime localDateTime = LocalDateTime.parse(valueTime, formatter);
         return localDateTime.toInstant(ZoneOffset.UTC);
