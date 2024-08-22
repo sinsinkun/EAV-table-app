@@ -1,20 +1,23 @@
 package org.access;
 
 import org.database.EavInterface;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+@SuppressWarnings("unused")
 @RestController
 public class Controller {
 
     EavInterface eav;
 
+    // constructor
     public Controller() {
-        this.eav = new EavInterface("localhost:3306", "localdb");
+//        this.eav = new EavInterface("localhost:3306", "localdb");
     }
 
-    @GetMapping("/")
+    @RequestMapping(method=RequestMethod.GET, path="/")
     public String index() {
-        return "Hello world";
+        return "Hello world from SpringBoot";
     }
 }
