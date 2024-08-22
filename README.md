@@ -1,4 +1,4 @@
-# EAV-table-design
+# EAV Table App
 
 Run the setup script to setup a local database with a basic Entity Attribute Value (EAV) system.
 
