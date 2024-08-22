@@ -5,6 +5,8 @@ import org.database.EavView;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.util.AnsiColors;
+import org.util.Fn;
 
 import java.util.List;
 
@@ -22,8 +24,9 @@ public class Controller {
     private void reconnectEav() {
         try {
             eav = new EavInterface("localhost:3306", "localdb");
+            Fn.printColor(AnsiColors.GREEN, "Connected to DB");
         } catch(Exception e) {
-            System.out.println("Err: Could not connect to DB -- " + e.getMessage());
+            Fn.printColor(AnsiColors.RED, "Err: Could not connect to DB -- " + e.getMessage());
         }
     }
 
