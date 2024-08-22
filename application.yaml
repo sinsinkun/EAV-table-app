@@ -1,0 +1,6 @@
+spring:
+  profiles:
+    default: "none"
+    active: "default"
+server:
+  port: 4000
