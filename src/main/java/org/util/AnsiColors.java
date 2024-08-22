@@ -1,5 +1,9 @@
 package org.util;
 
+import lombok.Getter;
+
+@SuppressWarnings("unused")
+@Getter
 public enum AnsiColors {
     BLACK("\u001B[30m"),
     RED("\u001B[31m"),
@@ -11,13 +15,9 @@ public enum AnsiColors {
     WHITE("\u001B[37m"),
     RESET("\u001B[0m");
 
-    private String value;
+    private final String value;
 
     AnsiColors(String value) {
         this.value = value;
-    }
-
-    public String getValue() {
-        return value;
     }
 }
