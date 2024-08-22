@@ -1,7 +1,7 @@
 package org.access;
 
-import org.database.EavInterface;
-import org.database.EavView;
+import org.database.*;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,8 +40,55 @@ public class Controller {
     public List<EavView> getAll() {
         if (eav == null) {
             reconnectEav();
-            return null;
+            throw new EavException();
         }
         return eav.getEverything();
+    }
+
+    @RequestMapping(method=RequestMethod.GET, path="/entity-types")
+    public List<EavEntityType> getAllEntityTypes() {
+        if (eav == null) {
+            reconnectEav();
+            throw new EavException();
+        }
+        return eav.getEntityTypes();
+    }
+
+    @RequestMapping(method=RequestMethod.GET, path="/entities")
+    public List<EavEntity> getAllEntities() {
+        if (eav == null) {
+            reconnectEav();
+            throw new EavException();
+        }
+        return eav.getEntities();
+    }
+
+    @RequestMapping(method=RequestMethod.GET, path="/entities/{type_id}")
+    public List<EavEntity> getEntitiesForType(@PathVariable("type_id") Integer typeId) {
+        if (eav == null) {
+            reconnectEav();
+            throw new EavException();
+        }
+        EavEntityType et = eav.getEntityTypeById(typeId);
+        return eav.getEntities(et);
+    }
+
+    @RequestMapping(method=RequestMethod.GET, path="/attributes")
+    public List<EavAttribute> getAllAttrs() {
+        if (eav == null) {
+            reconnectEav();
+            throw new EavException();
+        }
+        return eav.getAttributes();
+    }
+
+    @RequestMapping(method=RequestMethod.GET, path="/attributes/{entity_id}")
+    public List<EavAttribute> getAttrsForEntity(@PathVariable("entity_id") Integer entityId) {
+        if (eav == null) {
+            reconnectEav();
+            throw new EavException();
+        }
+        EavEntity e = eav.getEntityById(entityId);
+        return eav.getAttributes(e);
     }
 }

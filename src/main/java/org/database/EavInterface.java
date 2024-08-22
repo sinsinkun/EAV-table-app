@@ -176,14 +176,23 @@ public class EavInterface {
     // endregion entity
 
     // region attribute
-    public List<EavAttribute> getAttributes(EavEntityType entityType) {
-        String query = "SELECT * FROM " + attributeTable + " WHERE entity_type_id = " + entityType.getId();
+    public List<EavAttribute> getAttributes() {
+        String query = "SELECT * FROM " + attributeTable;
         return conn.createQuery(query).executeAndFetch(EavAttribute.class);
     }
 
+    public List<EavAttribute> getAttributes(EavEntityType entityType) {
+        String query = "SELECT * FROM " + attributeTable + " WHERE entity_type_id = :id";
+        return conn.createQuery(query)
+                .addParameter("id", entityType.getId())
+                .executeAndFetch(EavAttribute.class);
+    }
+
     public List<EavAttribute> getAttributes(EavEntity entity) {
-        String query = "SELECT * FROM " + attributeTable + " WHERE entity_type_id = " + entity.getEntityTypeId();
-        return conn.createQuery(query).executeAndFetch(EavAttribute.class);
+        String query = "SELECT * FROM " + attributeTable + " WHERE entity_type_id = :id";
+        return conn.createQuery(query)
+                .addParameter("id", entity.getEntityTypeId())
+                .executeAndFetch(EavAttribute.class);
     }
 
     public EavAttribute getAttributeById(int attrId) {
