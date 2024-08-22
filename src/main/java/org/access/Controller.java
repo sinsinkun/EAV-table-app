@@ -13,11 +13,20 @@ public class Controller {
 
     // constructor
     public Controller() {
-//        this.eav = new EavInterface("localhost:3306", "localdb");
+        reconnectEav();
+    }
+
+    private void reconnectEav() {
+        try {
+            eav = new EavInterface("localhost:3306", "localdb");
+        } catch(Exception e) {
+            System.out.println("Err: Could not connect to DB -- " + e.getMessage());
+        }
     }
 
     @RequestMapping(method=RequestMethod.GET, path="/")
     public String index() {
+        if (eav == null) reconnectEav();
         return "Hello world from SpringBoot";
     }
 }
