@@ -10,6 +10,7 @@ out/
 .idea/compiler.xml
 .idea/libraries/
 .idea/artifacts/
+.idea/inspectionProfiles/
 *.iws
 *.iml
 *.ipr

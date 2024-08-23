@@ -35,9 +35,9 @@ public class EavView {
 
     // value related
     @Column(name = "value_id")
-    private Integer value_id = null;
+    private Integer valueId = null;
     @Column(name = "created_at")
-    private String  created_at = null;
+    private String  createdAt = null;
     @Column(name = "value_str")
     private String  valueStr = null;
     @Column(name = "value_int")

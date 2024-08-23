@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.util.AnsiColors;
 import org.util.Fn;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 @RestController
@@ -36,13 +38,40 @@ public class Controller {
         return "Hello world from SpringBoot";
     }
 
-    @RequestMapping(method=RequestMethod.GET, path="/all")
+    @RequestMapping(method=RequestMethod.GET, path="/view/all")
     public List<EavView> getAll() {
         if (eav == null) {
             reconnectEav();
             throw new EavException();
         }
         return eav.getEverything();
+    }
+
+    @RequestMapping(method=RequestMethod.GET, path="/view/entities")
+    public List<EavView> getViewEntities() {
+        if (eav == null) {
+            reconnectEav();
+            throw new EavException();
+        }
+        List<EavEntityType> entityTypes = eav.getEntityTypes();
+        List<EavEntity> entities = eav.getEntities();
+
+        // build views
+        List<EavView> views = new ArrayList<>();
+        for (EavEntity entity : entities) {
+            List<EavEntityType> etList = entityTypes.stream()
+                    .filter(x -> x.getId() == entity.getEntityTypeId())
+                    .collect(Collectors.toList());
+            EavView v = new EavView();
+            v.setEntityTypeId(Integer.valueOf(entity.getEntityTypeId()));
+            v.setEntityId(Integer.valueOf(entity.getId()));
+            v.setEntity(entity.getEntity());
+            v.setCreatedAt(entity.getCreatedAt());
+            if (!etList.isEmpty()) v.setEntityType(etList.get(0).getEntityType());
+            views.add(v);
+        }
+
+        return views;
     }
 
     @RequestMapping(method=RequestMethod.GET, path="/entity-types")

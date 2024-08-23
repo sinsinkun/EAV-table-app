@@ -49,6 +49,18 @@ public class EavInterface {
         return conn.createQuery(query).executeAndFetch(EavEntityType.class);
     }
 
+    public List<EavEntityType> getEntityTypesByIds(Collection<Integer> ids) {
+        String query = "SELECT * FROM " + entityTypeTable + " WHERE id IN (:ids)";
+        StringBuilder idsStr = new StringBuilder();
+        for (Integer id : ids) {
+            idsStr.append(id.toString()).append(",");
+        }
+        idsStr.deleteCharAt(idsStr.length() - 1);
+        return conn.createQuery(query)
+                .addParameter("ids", idsStr)
+                .executeAndFetch(EavEntityType.class);
+    }
+
     public EavEntityType getEntityTypeById(int id) {
         String query = "SELECT * FROM " + entityTypeTable + " WHERE id = :id";
         return conn.createQuery(query)
