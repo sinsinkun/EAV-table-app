@@ -11,19 +11,24 @@ import org.sql2o.Sql2o;
 public class EavInterface {
     private final Connection conn;
 
-    public final String entityTypeTable = "eav_entity_types";
-    public final String entityTable = "eav_entities";
-    public final String attributeTable = "eav_attrs";
-    public final String valueTable = "eav_values";
+    public final String entityTypeTable;
+    public final String entityTable;
+    public final String attributeTable;
+    public final String valueTable;
 
     // constructor
-    public EavInterface(String server, String dbName) {
-        if (server.isEmpty() || dbName.isEmpty()) {
+    public EavInterface(DbSetup setup) {
+        if (setup.server.isEmpty() || setup.dbName.isEmpty()) {
             throw new IllegalArgumentException("Required arguments not provided");
         }
+        entityTypeTable = setup.entityTypeTable;
+        entityTable = setup.entityTable;
+        attributeTable = setup.attributeTable;
+        valueTable = setup.valueTable;
+
         Sql2o db = new Sql2o(
-                "jdbc:mysql://" + server + "/" + dbName + "?allowPublicKeyRetrieval=true",
-                "root", "password"
+                "jdbc:mysql://" + setup.server + "/" + setup.dbName + "?allowPublicKeyRetrieval=true",
+                setup.user, setup.password
         );
         try (Connection c = db.open()) {
             c.setRollbackOnException(false);

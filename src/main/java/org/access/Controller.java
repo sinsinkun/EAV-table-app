@@ -1,6 +1,7 @@
 package org.access;
 
 import org.database.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.util.AnsiColors;
 import org.util.Fn;
@@ -16,30 +17,34 @@ public class Controller {
 
     EavInterface eav;
 
-    // constructor
-    public Controller() {
-        reconnectEav();
-    }
-
-    private void reconnectEav() {
+    @RequestMapping(method=RequestMethod.POST, path="/login")
+    public ResponseEntity<?> login(@RequestBody DbAccess auth) {
+        DbSetup setup = new DbSetup();
+        setup.server = auth.getHost();
+        setup.dbName = auth.getDbName();
+        setup.user = auth.getUser();
+        setup.password = auth.getPassword();
+        if (!setup.isValid()) {
+            return ResponseEntity.status(400).body("Missing required info");
+        }
         try {
-            eav = new EavInterface("localhost:3306", "localdb");
+            eav = new EavInterface(setup);
             Fn.printColor(AnsiColors.GREEN, "Connected to DB");
+            return ResponseEntity.status(200).body("OK");
         } catch(Exception e) {
             Fn.printColor(AnsiColors.RED, "Err: Could not connect to DB -- " + e.getMessage());
+            return ResponseEntity.status(200).body("ERR");
         }
     }
 
     @RequestMapping(method=RequestMethod.GET, path="/")
     public String index() {
-        if (eav == null) reconnectEav();
         return "Hello world from SpringBoot";
     }
 
     @RequestMapping(method=RequestMethod.GET, path="/view/all")
     public List<EavView> getAll() {
         if (eav == null) {
-            reconnectEav();
             throw new EavException();
         }
         return eav.getEverything();
@@ -48,7 +53,6 @@ public class Controller {
     @RequestMapping(method=RequestMethod.GET, path="/view/entities")
     public List<EavView> getViewEntities() {
         if (eav == null) {
-            reconnectEav();
             throw new EavException();
         }
         List<EavEntityType> entityTypes = eav.getEntityTypes();
@@ -75,7 +79,6 @@ public class Controller {
     @RequestMapping(method=RequestMethod.GET, path="/entity-types")
     public List<EavEntityType> getAllEntityTypes() {
         if (eav == null) {
-            reconnectEav();
             throw new EavException();
         }
         return eav.getEntityTypes();
@@ -84,7 +87,6 @@ public class Controller {
     @RequestMapping(method=RequestMethod.GET, path="/entities")
     public List<EavEntity> getAllEntities() {
         if (eav == null) {
-            reconnectEav();
             throw new EavException();
         }
         return eav.getEntities();
@@ -93,7 +95,6 @@ public class Controller {
     @RequestMapping(method=RequestMethod.GET, path="/entities/{type_id}")
     public List<EavEntity> getEntitiesForType(@PathVariable("type_id") Integer typeId) {
         if (eav == null) {
-            reconnectEav();
             throw new EavException();
         }
         EavEntityType et = eav.getEntityTypeById(typeId);
@@ -103,7 +104,6 @@ public class Controller {
     @RequestMapping(method=RequestMethod.GET, path="/attributes")
     public List<EavAttribute> getAllAttrs() {
         if (eav == null) {
-            reconnectEav();
             throw new EavException();
         }
         return eav.getAttributes();
@@ -112,7 +112,6 @@ public class Controller {
     @RequestMapping(method=RequestMethod.GET, path="/attributes/{entity_id}")
     public List<EavAttribute> getAttrsForEntity(@PathVariable("entity_id") Integer entityId) {
         if (eav == null) {
-            reconnectEav();
             throw new EavException();
         }
         EavEntity e = eav.getEntityById(entityId);
