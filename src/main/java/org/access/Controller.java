@@ -33,7 +33,7 @@ public class Controller {
             return ResponseEntity.status(200).body("OK");
         } catch(Exception e) {
             Fn.printColor(AnsiColors.RED, "Err: Could not connect to DB -- " + e.getMessage());
-            return ResponseEntity.status(200).body("ERR");
+            return ResponseEntity.status(500).body("Could not connect to DB");
         }
     }
 
