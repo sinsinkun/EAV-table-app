@@ -1,6 +1,11 @@
-# EAV-table-design
+# EAV Table App
 
-Run the setup script to setup a local database with a basic Entity Attribute Value (EAV) system
+Run the setup script to setup a local database with a basic Entity Attribute Value (EAV) system.
+
+As a personal project, I also built a basic REST app around the EAV database to hopefully make 
+editing and retrieving data easier.
+
+## SQL Script
 
 - Includes utility stored procedures for ease of use
 - Includes utility views for ease of use
@@ -23,3 +28,8 @@ Run the setup script to setup a local database with a basic Entity Attribute Val
 
 6. (optional) view only values inserted into the EAV table
 `select * from all_existing_eav_data;`
+
+## Java App
+
+Basic springboot/sql2o application with a database interaction package layer 
+built for the SQL EAV system created through the SQL script.
