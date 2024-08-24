@@ -44,17 +44,13 @@ public class Controller {
 
     @RequestMapping(method=RequestMethod.GET, path="/view/all")
     public List<EavView> getAll() {
-        if (eav == null) {
-            throw new EavException();
-        }
+        if (eav == null) throw new EavException();
         return eav.getEverything();
     }
 
     @RequestMapping(method=RequestMethod.GET, path="/view/entities")
     public List<EavView> getViewEntities() {
-        if (eav == null) {
-            throw new EavException();
-        }
+        if (eav == null) throw new EavException();
         List<EavEntityType> entityTypes = eav.getEntityTypes();
         List<EavEntity> entities = eav.getEntities();
 
@@ -76,44 +72,35 @@ public class Controller {
         return views;
     }
 
+    @RequestMapping(method=RequestMethod.GET, path="/view/entity/{id}")
+    public List<EavView> getViewEntity(@PathVariable("entity_id") Integer entityId) {
+        if (eav == null) throw new EavException();
+        List<EavView> views = eav.getEntityViewById(entityId);
+        return views;
+    }
+
     @RequestMapping(method=RequestMethod.GET, path="/entity-types")
     public List<EavEntityType> getAllEntityTypes() {
-        if (eav == null) {
-            throw new EavException();
-        }
+        if (eav == null) throw new EavException();
         return eav.getEntityTypes();
     }
 
     @RequestMapping(method=RequestMethod.GET, path="/entities")
     public List<EavEntity> getAllEntities() {
-        if (eav == null) {
-            throw new EavException();
-        }
+        if (eav == null) throw new EavException();
         return eav.getEntities();
     }
 
     @RequestMapping(method=RequestMethod.GET, path="/entities/{type_id}")
     public List<EavEntity> getEntitiesForType(@PathVariable("type_id") Integer typeId) {
-        if (eav == null) {
-            throw new EavException();
-        }
+        if (eav == null) throw new EavException();
         EavEntityType et = eav.getEntityTypeById(typeId);
         return eav.getEntities(et);
     }
 
-    @RequestMapping(method=RequestMethod.GET, path="/attributes")
-    public List<EavAttribute> getAllAttrs() {
-        if (eav == null) {
-            throw new EavException();
-        }
-        return eav.getAttributes();
-    }
-
     @RequestMapping(method=RequestMethod.GET, path="/attributes/{entity_id}")
     public List<EavAttribute> getAttrsForEntity(@PathVariable("entity_id") Integer entityId) {
-        if (eav == null) {
-            throw new EavException();
-        }
+        if (eav == null) throw new EavException();
         EavEntity e = eav.getEntityById(entityId);
         return eav.getAttributes(e);
     }
