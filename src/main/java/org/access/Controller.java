@@ -1,10 +1,7 @@
 package org.access;
 
 import org.database.*;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.util.AnsiColors;
 import org.util.Fn;
 
@@ -14,6 +11,7 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 @RestController
+@CrossOrigin
 public class Controller {
 
     EavInterface eav;
