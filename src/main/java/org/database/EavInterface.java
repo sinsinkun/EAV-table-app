@@ -11,6 +11,8 @@ import org.sql2o.Sql2o;
 public class EavInterface {
     private final Connection conn;
 
+    public final String server;
+    public final String dbName;
     public final String entityTypeTable;
     public final String entityTable;
     public final String attributeTable;
@@ -25,6 +27,8 @@ public class EavInterface {
         entityTable = setup.entityTable;
         attributeTable = setup.attributeTable;
         valueTable = setup.valueTable;
+        server = setup.server;
+        dbName = setup.dbName;
 
         Sql2o db = new Sql2o(
                 "jdbc:mysql://" + setup.server + "/" + setup.dbName + "?allowPublicKeyRetrieval=true",

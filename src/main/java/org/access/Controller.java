@@ -17,7 +17,7 @@ public class Controller {
 
     EavInterface eav;
 
-    @RequestMapping(method=RequestMethod.POST, path="/login")
+    @RequestMapping(method=RequestMethod.POST, path="/connect")
     public ResponseEntity<?> login(@RequestBody DbAccess auth) {
         DbSetup setup = new DbSetup();
         setup.server = auth.getHost();
@@ -27,6 +27,12 @@ public class Controller {
         if (!setup.isValid()) {
             return ResponseEntity.status(400).body("Missing required info");
         }
+        // use existing connection if available
+        if (eav != null && eav.server == setup.server && eav.dbName == setup.dbName) {
+            Fn.printColor(AnsiColors.GREEN, "Already connected to DB");
+            return ResponseEntity.status(200).body("OK");
+        }
+        // connect to database
         try {
             eav = new EavInterface(setup);
             Fn.printColor(AnsiColors.GREEN, "Connected to DB");
