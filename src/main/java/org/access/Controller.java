@@ -79,7 +79,7 @@ public class Controller {
     }
 
     @RequestMapping(method=RequestMethod.GET, path="/view/entity/{id}")
-    public List<EavView> getViewEntity(@PathVariable("entity_id") Integer entityId) {
+    public List<EavView> getViewEntity(@PathVariable("id") Integer entityId) {
         if (eav == null) throw new EavException();
         List<EavView> views = eav.getEntityViewById(entityId);
         return views;
