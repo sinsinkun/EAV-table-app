@@ -147,6 +147,15 @@ public class EavInterface {
         return list_b.get(0);
     }
 
+    public EavEntity updateEntity(EavEntity updated) {
+        String query = "UPDATED " + entityTable + " SET entity = :entity WHERE id = :id";
+        conn.createQuery(query)
+                .addParameter("entity", updated.getEntity())
+                .addParameter("id", updated.getId())
+                .executeUpdate();
+        return getEntityById(getLastId());
+    }
+
     public boolean deleteEntity(EavEntity entity) {
         // delete all values for entity
         String query1 = "DELETE FROM " + valueTable + " WHERE entity_id = :entity_id";
@@ -235,6 +244,16 @@ public class EavInterface {
                 .addParameter("allow_multiple", allowMultiple)
                 .executeUpdate();
 
+        return getAttributeById(getLastId());
+    }
+
+    public EavAttribute updateAttribute(EavAttribute updated) {
+        String query = "UPDATED " + attributeTable + " SET value_type = :vt, allow_multiple = :am WHERE id = :id";
+        conn.createQuery(query)
+                .addParameter("vt", updated.getValueType())
+                .addParameter("am", updated.isAllowMultiple())
+                .addParameter("id", updated.getId())
+                .executeUpdate();
         return getAttributeById(getLastId());
     }
 
@@ -333,6 +352,37 @@ public class EavInterface {
                 .executeUpdate()
                 .getKey();
 
+        return getValueById(getLastId());
+    }
+
+    // bypass java validation
+    public EavValue unsafeCreateValue(EavValue value) {
+        String query = "CALL create_eav_value(:entity_id, :attr_id, :v1, :v2, :v3, :v4, :v5);";
+        conn.createQuery(query)
+                .addParameter("entity_id", value.getEntityId())
+                .addParameter("attr_id", value.getAttrId())
+                .addParameter("v1", value.getValueStr())
+                .addParameter("v2", value.getValueInt())
+                .addParameter("v3", value.getValueFloat())
+                .addParameter("v4", value.getValueTime())
+                .addParameter("v5", value.getValueBool())
+                .executeUpdate();
+
+        return getValueById(getLastId());
+    }
+
+    public EavValue updateValue(EavValue updated) {
+        String query = "UPDATED " + valueTable + " SET " +
+                " value_str = :v1, value_int = :v2, value_float = :v3, value_time = :v4, value_bool = :v5 " +
+                "WHERE id = :id";
+        conn.createQuery(query)
+                .addParameter("v1", updated.getValueStr())
+                .addParameter("v2", updated.getValueInt())
+                .addParameter("v3", updated.getValueFloat())
+                .addParameter("v4", updated.getValueTime())
+                .addParameter("v5", updated.getValueBool())
+                .addParameter("id", updated.getId())
+                .executeUpdate();
         return getValueById(getLastId());
     }
 

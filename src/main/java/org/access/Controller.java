@@ -97,6 +97,18 @@ public class Controller {
         return eav.getEntities();
     }
 
+    @RequestMapping(method=RequestMethod.POST, path="/entity")
+    public EavEntity createEntity(@RequestBody EavView builder) {
+        if (eav == null) throw new EavException();
+        return eav.createEntity(builder.getEntityType(), builder.getEntity());
+    }
+
+    @RequestMapping(method=RequestMethod.PUT, path="/entity")
+    public EavEntity updateEntity(@RequestBody EavEntity entity) {
+        if (eav == null) throw new EavException();
+        return eav.updateEntity(entity);
+    }
+
     @RequestMapping(method=RequestMethod.GET, path="/entities/{type_id}")
     public List<EavEntity> getEntitiesForType(@PathVariable("type_id") Integer typeId) {
         if (eav == null) throw new EavException();
@@ -109,5 +121,30 @@ public class Controller {
         if (eav == null) throw new EavException();
         EavEntity e = eav.getEntityById(entityId);
         return eav.getAttributes(e);
+    }
+
+    @RequestMapping(method=RequestMethod.POST, path="/attribute")
+    public EavAttribute createAttribute(@RequestBody EavView builder) {
+        if (eav == null) throw new EavException();
+        EavEntity entity = eav.getEntityById(builder.getEntityId());
+        return eav.createAttribute(entity, builder.getAttr(), builder.getValueType(), builder.getAllowMultiple());
+    }
+
+    @RequestMapping(method=RequestMethod.PUT, path="/attribute")
+    public EavAttribute updateAttribute(@RequestBody EavAttribute attr) {
+        if (eav == null) throw new EavException();
+        return eav.updateAttribute(attr);
+    }
+
+    @RequestMapping(method=RequestMethod.POST, path="/value")
+    public EavValue createValue(@RequestBody EavValue v) {
+        if (eav == null) throw new EavException();
+        return eav.unsafeCreateValue(v);
+    }
+
+    @RequestMapping(method=RequestMethod.PUT, path="/value")
+    public EavValue updateValue(@RequestBody EavValue v) {
+        if (eav == null) throw new EavException();
+        return eav.updateValue(v);
     }
 }
