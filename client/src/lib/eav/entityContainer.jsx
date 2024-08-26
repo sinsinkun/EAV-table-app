@@ -14,8 +14,18 @@ const EntityContainer = observer(() => {
     eav.fetchValues(id);
   }
 
+  function displayNoEntry() {
+    const arr = toJS(eav.entities);
+    if (arr.length < 1) return true;
+    if (arr.length === 1) {
+      let entity = arr[0].entity;
+      if (entity === "-") return true;
+    }
+    return false;
+  }
+
   if (eav.loading) return <div className="entry-container">Loading...</div>
-  if (toJS(eav.entities).length < 2) return (
+  if (displayNoEntry()) return (
     <div className="entry-container">
       <div className="eav-entry">
         <div className="label">No entries</div>
