@@ -33,3 +33,7 @@ editing and retrieving data easier.
 
 Basic springboot/sql2o application with a database interaction package layer 
 built for the SQL EAV system created through the SQL script.
+
+## Web Client
+
+Basic vite/react application for interfacing with the java API.
