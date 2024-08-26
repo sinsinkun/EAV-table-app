@@ -429,14 +429,14 @@ public class EavInterface {
     }
 
     public List<EavView> getEntityView(EavEntity entity) {
-        String query = "SELECT * FROM all_existing_eav_data WHERE entity_id = :entity_id";
+        String query = "SELECT * FROM all_possible_eav_data WHERE entity_id = :entity_id";
         return conn.createQuery(query)
                 .addParameter("entity_id", entity.getId())
                 .executeAndFetch(EavView.class);
     }
 
     public List<EavView> getEntityViewById(Integer entityId) {
-        String query = "SELECT * FROM all_existing_eav_data WHERE entity_id = :entity_id";
+        String query = "SELECT * FROM all_possible_eav_data WHERE entity_id = :entity_id";
         return conn.createQuery(query)
                 .addParameter("entity_id", entityId)
                 .executeAndFetch(EavView.class);
