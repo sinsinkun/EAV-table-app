@@ -24,17 +24,17 @@ const EntityContainer = observer(() => {
     return false;
   }
 
-  if (eav.loading) return <div className="entry-container">Loading...</div>
-  if (displayNoEntry()) return (
-    <div className="entry-container">
-      <div className="eav-entry">
-        <div className="label">No entries</div>
-      </div>
-    </div>
-  )
   return (
     <div className="entry-container">
-      {toJS(eav.entities).map(e => {
+      <div className="btn-ctn">
+        <button>Add entity</button>
+        <button>Add attribute</button>
+      </div>
+      {displayNoEntry() ? (
+        <div className="eav-entry">
+          <div className="label">No entries</div>
+        </div>
+      ) : (toJS(eav.entities).map(e => {
         if (e.entity === "-") return null;
         return (
           <div className="eav-entry" key={e.id}>
@@ -47,7 +47,12 @@ const EntityContainer = observer(() => {
             {fetchedEntity === e.id ? <EntityData /> : null}
           </div>
         )
-      })}
+      }))}
+      {eav.loading && (
+        <div className="loading-overlay">
+          <div className="loader">Loading...</div>
+        </div>
+      )}
     </div>
   )
 });

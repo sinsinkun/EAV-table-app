@@ -29,8 +29,6 @@ const EntityData = observer(() => {
     return valueText;
   }
 
-  if (eav.loading) return 
-    <div className="value-container">Loading...</div>;
   if (toJS(eav.values).length < 1) return
     <div className="value-container">No attributes found</div>;
   return (

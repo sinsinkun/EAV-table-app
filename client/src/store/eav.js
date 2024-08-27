@@ -98,6 +98,47 @@ class EavStore {
     this._setLoading(false);
   }
 
+  addEntity = async (input) => {
+    this._setLoading(true);
+    try {
+      const res = await fetch("http://localhost:4000/entity", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          entity: input.entity,
+          entityType: input.entityType,
+        })
+      }).then(x => x.json());
+      console.log("Succeeded -", res);
+    } catch (e) {
+      console.error("API failed -", e);
+    }
+    this._setLoading(false);
+  }
+
+  addAttribute = async (input) => {
+    this._setLoading(true);
+    try {
+      const res = await fetch("http://localhost:4000/attribute", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          attr: input.attr,
+          valueType: input.valueType,
+          allowMultiple: input.allowMultiple,
+        })
+      }).then(x => x.json());
+      console.log("Succeeded -", res);
+    } catch (e) {
+      console.error("API failed -", e);
+    }
+    this._setLoading(false);
+  }
+
   // internal actions
   _setLoading = (x) => this.loading = x;
   _setConnected = (x) => this.connected = x;

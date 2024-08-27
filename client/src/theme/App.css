@@ -133,14 +133,29 @@ nav a:hover {
   min-width: 100px;
   width: 80vw;
   max-width: 1200px;
-
   background-color: #444;
   padding: 0.5em;
   border-radius: 0.5em;
 }
 
+.eav-table .loading-overlay {
+  position: absolute;
+  width: 100%;
+  top: 40%;
+}
+
+.loading-overlay .loader {
+  margin: auto;
+  background-color: #0000005f;
+  padding: 2em 0;
+  width: 150px;
+  border-radius: 2em;
+}
+
 .eav-table .tab-container {
   display: flex;
+  font-size: 1.2em;
+  font-weight: 600;
 }
 
 .eav-table .tab {
@@ -194,4 +209,14 @@ nav a:hover {
 .eav-entry .value-container {
   margin-top: 0.5em;
   border-top: 1px solid #afafaf66;
+}
+
+.entry-container .btn-ctn {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.entry-container .btn-ctn button {
+  margin-right: 0.5em;
+  padding: 0.5em 1em;
 }

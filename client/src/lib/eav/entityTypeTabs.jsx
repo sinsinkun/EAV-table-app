@@ -20,7 +20,6 @@ const EntityTypeTabs = observer(() => {
   }, [eav.connected])
 
   if (!eav.connected) return <div className="tab-container">DB not connected</div>
-  if (eav.loading) return <div className="tab-container">Loading...</div>
   return (
     <div className="tab-container">
       {toJS(eav.entityTypes).map(et => {
