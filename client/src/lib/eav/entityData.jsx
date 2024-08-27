@@ -35,7 +35,7 @@ const EntityData = observer(() => {
     <div className="value-container">
       {toJS(eav.values).map(v => {
         return (
-          <div className="grid" key={v.valueId} style={{ textAlign: "left" }}>
+          <div className="grid" key={"value-" + v.attrId + v.valueId} style={{ textAlign: "left" }}>
             <div>{v.attr}</div>
             <div>{convertValueToText(v)}</div>
           </div>

@@ -4,6 +4,7 @@ import { toJS } from "mobx";
 
 import { eav } from "../../store";
 import EntityData from "./entityData";
+import FormModal from "./formModal";
 
 
 const EntityContainer = observer(() => {
@@ -27,8 +28,8 @@ const EntityContainer = observer(() => {
   return (
     <div className="entry-container">
       <div className="btn-ctn">
-        <button>Add entity</button>
-        <button>Add attribute</button>
+        <button onClick={() => eav.openForm("entity")}>+ entity</button>
+        <button onClick={() => eav.openForm("attr")}>+ attribute</button>
       </div>
       {displayNoEntry() ? (
         <div className="eav-entry">
@@ -37,7 +38,7 @@ const EntityContainer = observer(() => {
       ) : (toJS(eav.entities).map(e => {
         if (e.entity === "-") return null;
         return (
-          <div className="eav-entry" key={e.id}>
+          <div className="eav-entry" key={"entity-" + e.id}>
             <div className="header">
               <div className="label">{e.entity}</div>
               <button onClick={() => fetchData(e.id)}>
@@ -53,6 +54,7 @@ const EntityContainer = observer(() => {
           <div className="loader">Loading...</div>
         </div>
       )}
+      <FormModal />
     </div>
   )
 });

@@ -6,22 +6,29 @@ class EavStore {
   entityTypes = [];
   entities = [];
   values = [];
+  formType = null;
 
   constructor() {
     makeObservable(this, {
+      // observables
       loading: observable,
       connected: observable,
       entityTypes: observable,
       entities: observable,
       values: observable,
+      formType: observable,
+      // internal actions
       _setLoading: action,
       _setConnected: action,
       _setEntityTypes: action,
       _setEntities: action,
       _setValues: action,
+      // external actions
       clearEntityTypes: action,
       clearEntities: action,
       clearValues: action,
+      openForm: action,
+      closeForm: action,
     });
   }
 
@@ -150,6 +157,8 @@ class EavStore {
   clearEntityTypes = () => this.entityTypes = [];
   clearEntities = () => this.entities = [];
   clearValues = () => this.values = [];
+  openForm = (type) => this.formType = type;
+  closeForm = () => this.formType = null;
 }
 
 export default EavStore;

@@ -146,7 +146,7 @@ nav a:hover {
 
 .loading-overlay .loader {
   margin: auto;
-  background-color: #0000005f;
+  background-color: #0000001f;
   padding: 2em 0;
   width: 150px;
   border-radius: 2em;
@@ -219,4 +219,25 @@ nav a:hover {
 .entry-container .btn-ctn button {
   margin-right: 0.5em;
   padding: 0.5em 1em;
+}
+
+/* ---- EAV FORM ---- */
+.modal-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0.5em;
+  background-color: #0000003f;
+}
+
+.modal-container .modal-form {
+  margin: auto;
+  margin-top: 5em;
+  width: fit-content;
+  border: 1px solid white;
+  border-radius: 0.5em;
+  background-color: #357;
+  padding: 1em;
 }
