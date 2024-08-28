@@ -1,25 +1,23 @@
 import { useState } from "react";
-import { observer } from "mobx-react";
-import { toJS } from "mobx";
+import { useDispatch, useSelector } from "react-redux";
 
-import { eav } from "../../store";
 import EntityData from "./entityData";
-import FormModal from "./formModal";
+import { fetchValues, openForm } from "../../store/eav";
 
-
-const EntityContainer = observer(() => {
+const EntityContainer = () => {
+  const dispatch = useDispatch();
+  const entities = useSelector((state) => state.eav.entities);
   const [fetchedEntity, setFetchedEntity] = useState(0);
 
   function fetchData(id) {
     setFetchedEntity(id);
-    eav.fetchValues(id);
+    dispatch(fetchValues(id));
   }
 
   function displayNoEntry() {
-    const arr = toJS(eav.entities);
-    if (arr.length < 1) return true;
-    if (arr.length === 1) {
-      let entity = arr[0].entity;
+    if (entities.length < 1) return true;
+    if (entities.length === 1) {
+      let entity = entities[0].entity;
       if (entity === "-") return true;
     }
     return false;
@@ -28,14 +26,14 @@ const EntityContainer = observer(() => {
   return (
     <div className="entry-container">
       <div className="btn-ctn">
-        <button onClick={() => eav.openForm("entity")}>+ entity</button>
-        <button onClick={() => eav.openForm("attr")}>+ attribute</button>
+        <button onClick={() => dispatch(openForm("entity"))}>+ entity</button>
+        <button onClick={() => dispatch(openForm("attr"))}>+ attribute</button>
       </div>
       {displayNoEntry() ? (
         <div className="eav-entry">
           <div className="label">No entries</div>
         </div>
-      ) : (toJS(eav.entities).map(e => {
+      ) : (entities.map(e => {
         if (e.entity === "-") return null;
         return (
           <div className="eav-entry" key={"entity-" + e.id}>
@@ -49,14 +47,8 @@ const EntityContainer = observer(() => {
           </div>
         )
       }))}
-      {eav.loading && (
-        <div className="loading-overlay">
-          <div className="loader">Loading...</div>
-        </div>
-      )}
-      <FormModal />
     </div>
   )
-});
+}
 
 export default EntityContainer;

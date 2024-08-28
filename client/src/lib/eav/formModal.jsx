@@ -1,14 +1,30 @@
 import { useEffect, useState } from "react";
-import { observer } from "mobx-react";
+import { useSelector, useDispatch } from "react-redux";
 
-import { eav } from "../../store";
+import { closeForm } from "../../store/eav";
 
-const FormModal = observer(() => {
+const FormModal = () => {
+  const dispatch = useDispatch();
+  const formType = useSelector((state) => state.eav.formType);
   const [fields, setFields] = useState({});
   const [title, setTitle] = useState("");
 
+  function handleSubmit(e) {
+    e.preventDefault();
+    console.log("submit", fields);
+  }
+
+  function handleInput(e) {
+    const { name, value } = e.target;
+    setFields(prev => ({ ...prev, [name]: value }));
+  }
+
+  function handleSelect(e) {
+
+  }
+
   useEffect(() => {
-    switch (eav.formType) {
+    switch (formType) {
       case "entity":
         setTitle("New Entity");
         setFields({ entity: "", entityType: "" });
@@ -21,17 +37,46 @@ const FormModal = observer(() => {
         setTitle("Unknown");
         break;
     }
-  }, [eav.formType])
+  }, [formType])
 
-  if (!eav.formType) return null;
+  function renderEntityFields() {
+    return (
+      <>
+        <label htmlFor="entity">Name</label>
+        <input type="text" name="entity" onChange={handleInput} />
+      </>
+    )
+  }
+
+  function renderAttrFields() {
+    return (
+      <>
+        <label htmlFor="attr">Name</label>
+        <input type="text" name="attr" onChange={handleInput} />
+        <label htmlFor="valueType">Value Type</label>
+        <select name="valueType" onSelect={handleSelect}>
+          <option>String</option>
+          <option>Int</option>
+          <option>Float</option>
+        </select>
+      </>
+    )
+  }
+
+  if (!formType) return null;
   return (
     <div className="modal-container">
-      <div className="modal-form">
+      <form className="modal-form" onSubmit={handleSubmit}>
         <h3>{title}</h3>
-        <button onClick={() => eav.closeForm()}>Close</button>
-      </div>
+        {formType === "entity" && renderEntityFields()}
+        {formType === "attr" && renderAttrFields()}
+        <div className="btn-ctn">
+          <button type="submit">Add</button>
+          <button onClick={() => dispatch(closeForm())}>Close</button>
+        </div>
+      </form>
     </div>
   )
-})
+}
 
 export default FormModal;

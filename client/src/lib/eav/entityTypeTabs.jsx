@@ -1,28 +1,31 @@
 import { useEffect, useState } from "react";
-import { observer } from "mobx-react";
-import { toJS } from "mobx";
+import { useDispatch, useSelector } from "react-redux";
 
-import { eav } from "../../store";
+import { clearValues, fetchEntities, connect, fetchEntityTypes } from "../../store/eav";
 
-const EntityTypeTabs = observer(() => {
+const EntityTypeTabs = () => {
+  const dispatch = useDispatch();
+  const connected = useSelector((state) => state.eav.connected);
+  const loading = useSelector((state) => state.eav.loading);
+  const tabs = useSelector((state) => state.eav.entityTypes);
   const [activeTab, setActiveTab] = useState(0);
 
   function loadEntities(id) {
     setActiveTab(id);
-    eav.clearValues();
-    eav.fetchEntities(id);
+    dispatch(clearValues());
+    dispatch(fetchEntities(id));
   }
 
   useEffect(() => {
-    if (!eav.connected) eav.connect();
-    else if (!eav.loading) eav.fetchEntityTypes();
+    if (!connected) dispatch(connect());
+    else if (!loading) dispatch(fetchEntityTypes());
     // eslint-disable-next-line
-  }, [eav.connected])
+  }, [connected])
 
-  if (!eav.connected) return <div className="tab-container">DB not connected</div>
+  if (!connected) return <div className="tab-container">DB not connected</div>
   return (
     <div className="tab-container">
-      {toJS(eav.entityTypes).map(et => {
+      {tabs.map(et => {
         let className = "tab";
         if (activeTab == et.id) className += " selected";
         return (
@@ -33,6 +36,6 @@ const EntityTypeTabs = observer(() => {
       })}
     </div>
   )
-});
+}
 
 export default EntityTypeTabs;

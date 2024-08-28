@@ -1,9 +1,7 @@
-import { observer } from "mobx-react";
-import { toJS } from "mobx";
+import { useSelector } from "react-redux";
 
-import { eav } from "../../store";
-
-const EntityData = observer(() => {
+const EntityData = () => {
+  const valuesData = useSelector((state) => state.eav.values);
 
   function convertValueToText(v) {
     let valueText = "null";
@@ -29,11 +27,12 @@ const EntityData = observer(() => {
     return valueText;
   }
 
-  if (toJS(eav.values).length < 1) return
-    <div className="value-container">No attributes found</div>;
+  if (valuesData.length < 1) return (
+    <div className="value-container">No attributes found</div>
+  )
   return (
     <div className="value-container">
-      {toJS(eav.values).map(v => {
+      {valuesData.map(v => {
         return (
           <div className="grid" key={"value-" + v.attrId + v.valueId} style={{ textAlign: "left" }}>
             <div>{v.attr}</div>
@@ -43,6 +42,6 @@ const EntityData = observer(() => {
       })}
     </div>
   )
-})
+}
 
 export default EntityData;

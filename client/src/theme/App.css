@@ -211,12 +211,12 @@ nav a:hover {
   border-top: 1px solid #afafaf66;
 }
 
-.entry-container .btn-ctn {
+.eav-table .btn-ctn {
   display: flex;
   flex-direction: row-reverse;
 }
 
-.entry-container .btn-ctn button {
+.eav-table .btn-ctn button {
   margin-right: 0.5em;
   padding: 0.5em 1em;
 }
@@ -240,4 +240,14 @@ nav a:hover {
   border-radius: 0.5em;
   background-color: #357;
   padding: 1em;
+}
+
+.modal-form h3 {
+  margin-bottom: 1em;
+}
+
+.modal-form label {
+  display: block;
+  text-align: left;
+  padding: 0 0.6em;
 }

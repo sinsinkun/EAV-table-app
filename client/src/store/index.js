@@ -1,11 +1,9 @@
-import EavStore from "./eav";
-import GeneralStore from "./general";
+import { configureStore } from '@reduxjs/toolkit';
 
-const general = new GeneralStore();
-const eav = new EavStore();
+import eavReducer from './eav';
 
-if (import.meta.env.VITE_STAGE === "dev") {
-  window.store = { general, eav };
-  console.log("Initialized dev store access", window.store);
-}
-export { general, eav };
+export default configureStore({
+  reducer: {
+    eav: eavReducer,
+  }
+});

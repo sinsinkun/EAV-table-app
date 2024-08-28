@@ -1,50 +1,8 @@
-import { action, makeObservable, observable, toJS } from 'mobx';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-class EavStore {
-  loading = false;
-  connected = false;
-  entityTypes = [];
-  entities = [];
-  values = [];
-  formType = null;
-
-  constructor() {
-    makeObservable(this, {
-      // observables
-      loading: observable,
-      connected: observable,
-      entityTypes: observable,
-      entities: observable,
-      values: observable,
-      formType: observable,
-      // internal actions
-      _setLoading: action,
-      _setConnected: action,
-      _setEntityTypes: action,
-      _setEntities: action,
-      _setValues: action,
-      // external actions
-      clearEntityTypes: action,
-      clearEntities: action,
-      clearValues: action,
-      openForm: action,
-      closeForm: action,
-    });
-  }
-
-  // reducers
-  get state() {
-    return {
-      loading: this.loading,
-      connected: this.connected,
-      entityTypes: toJS(this.entityTypes),
-      entities: toJS(this.entities),
-      values: toJS(this.values),
-    }
-  }
-
-  // async actions
-  connect = async () => {
+export const connect = createAsyncThunk(
+  'eav/connect',
+  async (_, { rejectWithValue }) => {
     try {
       const res = await fetch("http://localhost:4000/connect", {
         method: "POST",
@@ -58,107 +16,164 @@ class EavStore {
           password: "password",
         })
       }).then(x => x.text());
-      if (res !== "OK") throw new Error(res);
-      this._setConnected(true);
+      if (res !== "OK") rejectWithValue(false);
+      return true;
     } catch (e) {
       console.error("Connection failed -", e);
-      this._setConnected(false);
+      rejectWithValue(false);
     }
   }
+)
 
-  fetchEntityTypes = async () => {
-    this._setLoading(true);
+export const fetchEntityTypes = createAsyncThunk(
+  'eav/fetchEntityTypes',
+  async (_, { rejectWithValue }) => {
     try {
       const res = await fetch("http://localhost:4000/entity-types", {
         method: "GET",
       }).then(x => x.json());
-      this._setEntityTypes(res);
+      return res;
     } catch (e) {
       console.error("API failed -", e);
+      rejectWithValue(null);
     }
-    this._setLoading(false);
   }
+)
 
-  fetchEntities = async (id) => {
-    this._setLoading(true);
+export const fetchEntities = createAsyncThunk(
+  'eav/fetchEntities',
+  async (typeId, { rejectWithValue }) => {
     try {
-      const res = await fetch("http://localhost:4000/entities/" + id, {
+      const res = await fetch("http://localhost:4000/entities/" + typeId, {
         method: "GET",
       }).then(x => x.json());
-      this._setEntities(res);
+      return res;
     } catch (e) {
       console.error("API failed -", e);
+      rejectWithValue(null);
     }
-    this._setLoading(false);
   }
+)
 
-  fetchValues = async (id) => {
-    this._setLoading(true);
+export const fetchValues = createAsyncThunk(
+  'eav/fetchValues',
+  async (entityId, { rejectWithValue }) => {
     try {
-      const res = await fetch("http://localhost:4000/view/entity/" + id, {
+      const res = await fetch("http://localhost:4000/view/entity/" + entityId, {
         method: "GET",
       }).then(x => x.json());
-      this._setValues(res);
+      return res;
     } catch (e) {
       console.error("API failed -", e);
+      rejectWithValue(null);
     }
-    this._setLoading(false);
   }
+)
 
-  addEntity = async (input) => {
-    this._setLoading(true);
-    try {
-      const res = await fetch("http://localhost:4000/entity", {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          entity: input.entity,
-          entityType: input.entityType,
-        })
-      }).then(x => x.json());
-      console.log("Succeeded -", res);
-    } catch (e) {
-      console.error("API failed -", e);
-    }
-    this._setLoading(false);
+export const addAttribute = createAsyncThunk(
+  'eav/addAttribute',
+  async (input, { rejectWithValue }) => {
+    // todo
   }
+)
 
-  addAttribute = async (input) => {
-    this._setLoading(true);
-    try {
-      const res = await fetch("http://localhost:4000/attribute", {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          attr: input.attr,
-          valueType: input.valueType,
-          allowMultiple: input.allowMultiple,
-        })
-      }).then(x => x.json());
-      console.log("Succeeded -", res);
-    } catch (e) {
-      console.error("API failed -", e);
-    }
-    this._setLoading(false);
+export const addEntity = createAsyncThunk(
+  'eav/addEntity',
+  async (input, { rejectWithValue }) => {
+    // todo
   }
+)
 
-  // internal actions
-  _setLoading = (x) => this.loading = x;
-  _setConnected = (x) => this.connected = x;
-  _setEntityTypes = (arr) => this.entityTypes = [ ...arr];
-  _setEntities = (arr) => this.entities = [ ...arr];
-  _setValues = (arr) => this.values = [ ...arr];
-  
-  // external actions
-  clearEntityTypes = () => this.entityTypes = [];
-  clearEntities = () => this.entities = [];
-  clearValues = () => this.values = [];
-  openForm = (type) => this.formType = type;
-  closeForm = () => this.formType = null;
-}
+export const eavSlice = createSlice({
+  name: 'eav',
+  initialState: {
+    loading: false,
+    connected: false,
+    entityTypes: [],
+    entities: [],
+    values: [],
+    formType: null,
+    activeEnType: null,
+  },
+  reducers: {
+    clearEntityTypes: (state) => {
+      state.entityTypes = []
+    },
+    clearEntities: (state) => {
+      state.entities = []
+    },
+    clearValues: (state) => {
+      state.values = []
+    },
+    openForm: (state, action) => {
+      state.formType = action.payload
+    },
+    closeForm: (state) => {
+      state.formType = null
+    },
+    setActiveEnType: (state, action) => {
+      const [active] = state.entityTypes.filter(x => x.id === action.payload);
+      if (active) state.activeEnType = active.entityType;
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(connect.pending, (state) => {
+      state.loading = true;
+    })
+    builder.addCase(connect.fulfilled, (state) => {
+      state.loading = false;
+      state.connected = true;
+    })
+    builder.addCase(connect.rejected, (state) => {
+      state.loading = false;
+      state.connected = false;
+    })
 
-export default EavStore;
+    builder.addCase(fetchEntityTypes.pending, (state) => {
+      state.loading = true;
+    })
+    builder.addCase(fetchEntityTypes.fulfilled, (state, action) => {
+      state.loading = false;
+      state.entityTypes = action.payload;
+    })
+    builder.addCase(fetchEntityTypes.rejected, (state) => {
+      state.loading = false;
+      state.entityTypes = [];
+    })
+
+    builder.addCase(fetchEntities.pending, (state) => {
+      state.loading = true;
+    })
+    builder.addCase(fetchEntities.fulfilled, (state, action) => {
+      state.loading = false;
+      state.entities = action.payload;
+    })
+    builder.addCase(fetchEntities.rejected, (state) => {
+      state.loading = false;
+      state.entities = [];
+    })
+
+    builder.addCase(fetchValues.pending, (state) => {
+      state.loading = true;
+    })
+    builder.addCase(fetchValues.fulfilled, (state, action) => {
+      state.loading = false;
+      state.values = action.payload;
+    })
+    builder.addCase(fetchValues.rejected, (state) => {
+      state.loading = false;
+      state.values = [];
+    })
+  }
+});
+
+export const {
+  clearEntityTypes,
+  clearEntities,
+  clearValues,
+  openForm,
+  closeForm,
+  setActiveEnType,
+} = eavSlice.actions;
+
+export default eavSlice.reducer;
