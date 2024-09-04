@@ -72,6 +72,15 @@ input, textarea, select {
   width: calc(100% - 2em);
 }
 
+input[type="checkbox"] {
+  width: 1.5em;
+}
+
+select {
+  padding: 0.8em 0.2em;
+  width: calc(100% - 1em);
+}
+
 /* ---- GENERAL USE CLASSES ---- */
 .container-center {
   width: fit-content;
@@ -250,4 +259,9 @@ nav a:hover {
   display: block;
   text-align: left;
   padding: 0 0.6em;
+}
+
+.modal-form .err-msg {
+  color: #ff2600;
+  margin-top: 0.5em;
 }

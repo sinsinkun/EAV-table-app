@@ -1,33 +1,58 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import { closeForm } from "../../store/eav";
+import { addAttribute, addEntity, closeForm } from "../../store/eav";
 
 const FormModal = () => {
   const dispatch = useDispatch();
   const formType = useSelector((state) => state.eav.formType);
+  const activeEnType = useSelector((state) => state.eav.activeEnType);
   const [fields, setFields] = useState({});
   const [title, setTitle] = useState("");
+  const [err, setErr] = useState("");
 
   function handleSubmit(e) {
     e.preventDefault();
-    console.log("submit", fields);
+    if (!activeEnType) return setErr("No active tab");
+    const form = { ...fields };
+    form.entityType = activeEnType.entityType;
+    form.entityTypeId = activeEnType.id;
+    if (formType === "entity") {
+      if (!form.entity) return setErr("No name specified");
+      dispatch(addEntity(form));
+    }
+    if (formType === "attr") {
+      if (!form.attr) return setErr("No name specified");
+      let regex = new RegExp(/^[-_0-9a-z]+$/i);
+      if (!regex.test(form.attr)) return setErr("Attribute name only accepts a-z, 0-9, -, _");
+      dispatch(addAttribute(form));
+    }
   }
 
   function handleInput(e) {
     const { name, value } = e.target;
     setFields(prev => ({ ...prev, [name]: value }));
+    setErr("");
   }
 
-  function handleSelect(e) {
+  function handleCheckInput(e) {
+    const { name, checked } = e.target;
+    setFields(prev => ({ ...prev, [name]: checked }));
+    setErr("");
+  }
 
+  function close() {
+    setFields({});
+    setTitle("");
+    setErr("");
+    dispatch(closeForm());
   }
 
   useEffect(() => {
     switch (formType) {
       case "entity":
         setTitle("New Entity");
-        setFields({ entity: "", entityType: "" });
+        setFields({ entity: "" });
         break;
       case "attr":
         setTitle("New Attribute");
@@ -54,11 +79,18 @@ const FormModal = () => {
         <label htmlFor="attr">Name</label>
         <input type="text" name="attr" onChange={handleInput} />
         <label htmlFor="valueType">Value Type</label>
-        <select name="valueType" onSelect={handleSelect}>
-          <option>String</option>
-          <option>Int</option>
-          <option>Float</option>
+        <select name="valueType" onChange={handleInput}>
+          <option value=""></option>
+          <option value="STR">String</option>
+          <option value="INT">Integer</option>
+          <option value="FLOAT">Float</option>
+          <option value="TIME">Time</option>
+          <option value="BOOL">Boolean</option>
         </select>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <label htmlFor="allowMultiple">Allow Multiple</label>
+          <input type="checkbox" name="allowMultiple" onChange={handleCheckInput} />
+        </div>
       </>
     )
   }
@@ -72,8 +104,11 @@ const FormModal = () => {
         {formType === "attr" && renderAttrFields()}
         <div className="btn-ctn">
           <button type="submit">Add</button>
-          <button onClick={() => dispatch(closeForm())}>Close</button>
+          <button onClick={close}>Close</button>
         </div>
+        {!!err && (
+          <div className="err-msg">ERR: {err}</div>
+        )}
       </form>
     </div>
   )

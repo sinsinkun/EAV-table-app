@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { clearValues, fetchEntities, connect, fetchEntityTypes } from "../../store/eav";
+import { clearValues, fetchEntities, connect, fetchEntityTypes, setActiveEnType } from "../../store/eav";
 
 const EntityTypeTabs = () => {
   const dispatch = useDispatch();
@@ -14,6 +14,7 @@ const EntityTypeTabs = () => {
     setActiveTab(id);
     dispatch(clearValues());
     dispatch(fetchEntities(id));
+    dispatch(setActiveEnType(id));
   }
 
   useEffect(() => {

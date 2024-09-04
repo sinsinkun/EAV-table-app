@@ -232,15 +232,15 @@ public class EavInterface {
                 .executeAndFetchFirst(EavAttribute.class);
     }
 
-    public EavAttribute createAttribute(EavEntity entity, String attributeName, ValueType attributeType, boolean allowMultiple) {
-        if (entity == null || attributeName.isEmpty() || attributeType == null) {
+    public EavAttribute createAttribute(Integer entityTypeId, String attributeName, ValueType attributeType, boolean allowMultiple) {
+        if (entityTypeId == null || attributeName.isEmpty() || attributeType == null) {
             throw new IllegalArgumentException("Err: invalid parameters");
         }
         String query = "CALL create_eav_attr(:attr, :attr_type, :entity_type_id, :allow_multiple);";
         conn.createQuery(query)
                 .addParameter("attr", attributeName)
                 .addParameter("attr_type", attributeType.getValue())
-                .addParameter("entity_type_id", entity.getEntityTypeId())
+                .addParameter("entity_type_id", entityTypeId)
                 .addParameter("allow_multiple", allowMultiple)
                 .executeUpdate();
 

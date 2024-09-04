@@ -7,6 +7,7 @@ import { fetchValues, openForm } from "../../store/eav";
 const EntityContainer = () => {
   const dispatch = useDispatch();
   const entities = useSelector((state) => state.eav.entities);
+  const activeTab = useSelector((state) => state.eav.activeEnType);
   const [fetchedEntity, setFetchedEntity] = useState(0);
 
   function fetchData(id) {
@@ -31,7 +32,9 @@ const EntityContainer = () => {
       </div>
       {displayNoEntry() ? (
         <div className="eav-entry">
-          <div className="label">No entries</div>
+          <div className="label">
+            {activeTab ? "No entries" : "No tab selected"}
+          </div>
         </div>
       ) : (entities.map(e => {
         if (e.entity === "-") return null;

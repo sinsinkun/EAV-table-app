@@ -126,8 +126,16 @@ public class Controller {
     @RequestMapping(method=RequestMethod.POST, path="/attribute")
     public EavAttribute createAttribute(@RequestBody EavView builder) {
         if (eav == null) throw new EavException();
-        EavEntity entity = eav.getEntityById(builder.getEntityId());
-        return eav.createAttribute(entity, builder.getAttr(), builder.getValueType(), builder.getAllowMultiple());
+        Integer entityTypeId;
+        if (builder.getEntityTypeId() != null) {
+            entityTypeId = builder.getEntityTypeId();
+        } else if (builder.getEntityId() != null) {
+            EavEntity entity = eav.getEntityById(builder.getEntityId());
+            entityTypeId = entity.getEntityTypeId();
+        } else {
+            throw new EavException("Missing entityTypeId");
+        }
+        return eav.createAttribute(entityTypeId, builder.getAttr(), builder.getValueType(), builder.getAllowMultiple());
     }
 
     @RequestMapping(method=RequestMethod.PUT, path="/attribute")
