@@ -43,11 +43,6 @@ public class Controller {
         }
     }
 
-    @RequestMapping(method=RequestMethod.GET, path="/")
-    public String index() {
-        return "Hello world from SpringBoot";
-    }
-
     @RequestMapping(method=RequestMethod.GET, path="/view/all")
     public List<EavView> getAll() {
         if (eav == null) throw new EavException();
