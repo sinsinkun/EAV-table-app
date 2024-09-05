@@ -281,9 +281,22 @@ export const eavSlice = createSlice({
     });
     builder.addCase(updateValue.pending, (state) => {
       state.loading = true;
-    }).addCase(updateValue.fulfilled, (state, value) => {
+    }).addCase(updateValue.fulfilled, (state, action) => {
       state.loading = false;
-      // todo: update existing value
+      if (action.payload.allowMultiple) {
+        state.values.push(action.payload);
+      } else {
+        const valueId = action.payload.id;
+        state.values.forEach(v => {
+          if (v.valueId === valueId) {
+            v.valueStr = action.payload.valueStr;
+            v.valueInt = action.payload.valueInt;
+            v.valueFloat = action.payload.valueFloat;
+            v.valueTime = action.payload.valueTime;
+            v.valueBool = action.payload.valueBool;
+          }
+        });
+      }
     }).addCase(updateValue.rejected, (state) => {
       state.loading = false;
     });
