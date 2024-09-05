@@ -1,17 +1,16 @@
-import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import EntityData from "./entityData";
-import { fetchValues, openForm } from "../../store/eav";
+import { fetchValues, openForm, setActiveEntity } from "../../store/eav";
 
 const EntityContainer = () => {
   const dispatch = useDispatch();
   const entities = useSelector((state) => state.eav.entities);
   const activeTab = useSelector((state) => state.eav.activeEnType);
-  const [fetchedEntity, setFetchedEntity] = useState(0);
+  const activeEntity = useSelector((state) => state.eav.activeEntity);
 
   function fetchData(id) {
-    setFetchedEntity(id);
+    dispatch(setActiveEntity(id));
     dispatch(fetchValues(id));
   }
 
@@ -46,7 +45,7 @@ const EntityContainer = () => {
                 Fetch data
               </button>
             </div>
-            {fetchedEntity === e.id ? <EntityData /> : null}
+            {activeEntity?.id === e.id ? <EntityData /> : null}
           </div>
         )
       }))}

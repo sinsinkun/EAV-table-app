@@ -165,6 +165,7 @@ export const eavSlice = createSlice({
     values: [],
     formType: null,
     activeEnType: null,
+    activeEntity: null,
   },
   reducers: {
     clearEntityTypes: (state) => {
@@ -186,6 +187,10 @@ export const eavSlice = createSlice({
       const [active] = state.entityTypes.filter(x => x.id === action.payload);
       if (active) state.activeEnType = active;
     },
+    setActiveEntity: (state, action) => {
+      const [active] = state.entities.filter(x => x.id === action.payload);
+      if (active) state.activeEntity = active;
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(connect.pending, (state) => {
@@ -202,6 +207,7 @@ export const eavSlice = createSlice({
     }).addCase(fetchEntityTypes.fulfilled, (state, action) => {
       state.loading = false;
       state.entityTypes = action.payload;
+      state.activeEntity = null;
     }).addCase(fetchEntityTypes.rejected, (state) => {
       state.loading = false;
       state.entityTypes = [];
@@ -211,6 +217,7 @@ export const eavSlice = createSlice({
     }).addCase(fetchEntities.fulfilled, (state, action) => {
       state.loading = false;
       state.entities = action.payload;
+      state.activeEntity = null;
     }).addCase(fetchEntities.rejected, (state) => {
       state.loading = false;
       state.entities = [];
@@ -259,22 +266,26 @@ export const eavSlice = createSlice({
       state.loading = true;
     }).addCase(addValue.fulfilled, (state, action) => {
       state.loading = false;
-      if (action.payload.allowMultiple) {
+      // determine if adding new row or modifying existing row
+      let addNewRow = false;
+      let idx = -1;
+      state.values.forEach((v, i) => {
+        if (v.attrId === action.payload.attrId && v.entityId === action.payload.entityId) {
+          if (!v.valueId) idx = i;
+          else if (v.valueId && v.allowMultiple) addNewRow = true; 
+        }
+      })
+      // update existing state
+      if (addNewRow) {
         state.values.push(action.payload);
-      } else {
-        const attrId = action.payload.attrId;
-        const entityId = action.payload.attrId;
-        state.values.forEach(v => {
-          if (v.attrId === attrId && v.entityId === entityId) {
-            v.valueId = action.payload.id;
-            v.createdAt = action.payload.createdAt;
-            v.valueStr = action.payload.valueStr;
-            v.valueInt = action.payload.valueInt;
-            v.valueFloat = action.payload.valueFloat;
-            v.valueTime = action.payload.valueTime;
-            v.valueBool = action.payload.valueBool;
-          }
-        });
+      } else if (idx > -1) {
+        state.values[idx].valueId = action.payload.id;
+        state.values[idx].createdAt = action.payload.createdAt;
+        state.values[idx].valueStr = action.payload.valueStr;
+        state.values[idx].valueInt = action.payload.valueInt;
+        state.values[idx].valueFloat = action.payload.valueFloat;
+        state.values[idx].valueTime = action.payload.valueTime;
+        state.values[idx].valueBool = action.payload.valueBool;
       }
     }).addCase(addValue.rejected, (state) => {
       state.loading = false;
@@ -283,19 +294,24 @@ export const eavSlice = createSlice({
       state.loading = true;
     }).addCase(updateValue.fulfilled, (state, action) => {
       state.loading = false;
-      if (action.payload.allowMultiple) {
+      // determine if adding new row or modifying existing row
+      let addNewRow = false;
+      let idx = -1;
+      state.values.forEach((v, i) => {
+        if (v.attrId === action.payload.attrId && v.entityId === action.payload.entityId) {
+          if (v.allowMultiple) addNewRow = true;
+          else idx = i;
+        }
+      })
+      // update existing state
+      if (addNewRow) {
         state.values.push(action.payload);
-      } else {
-        const valueId = action.payload.id;
-        state.values.forEach(v => {
-          if (v.valueId === valueId) {
-            v.valueStr = action.payload.valueStr;
-            v.valueInt = action.payload.valueInt;
-            v.valueFloat = action.payload.valueFloat;
-            v.valueTime = action.payload.valueTime;
-            v.valueBool = action.payload.valueBool;
-          }
-        });
+      } else if (idx > -1) {
+        state.values[idx].valueStr = action.payload.valueStr;
+        state.values[idx].valueInt = action.payload.valueInt;
+        state.values[idx].valueFloat = action.payload.valueFloat;
+        state.values[idx].valueTime = action.payload.valueTime;
+        state.values[idx].valueBool = action.payload.valueBool;
       }
     }).addCase(updateValue.rejected, (state) => {
       state.loading = false;
@@ -310,6 +326,7 @@ export const {
   openForm,
   closeForm,
   setActiveEnType,
+  setActiveEntity,
 } = eavSlice.actions;
 
 export default eavSlice.reducer;

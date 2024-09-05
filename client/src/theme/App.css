@@ -241,12 +241,10 @@ nav a:hover {
 
 .value-field-container {
   display: flex;
-  padding: 0.2em 0.5em;
-  margin: 0.2em 0;
 }
 
 .value-field-container input {
-  padding: 0;
+  padding: 0.2em 0.5em;
   margin: 0;
   max-width: 30em;
 }

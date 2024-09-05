@@ -53,7 +53,7 @@ const ValueRow = ({ data }) => {
     switch (data.valueType) {
       case "STR":
         if (data.valueStr) {
-          setFValue(data.valueStr);
+          if (!data.allowMultiple) setFValue(data.valueStr);
           setDValue(data.valueStr);
         } else {
           setDValue("-");
@@ -61,7 +61,7 @@ const ValueRow = ({ data }) => {
         break;
       case "INT":
         if (data.valueInt || data.valueInt === 0) {
-          setFValue(data.valueInt);
+          if (!data.allowMultiple) setFValue(data.valueInt);
           setDValue(String(data.valueInt));
         } else {
           setDValue("-")
@@ -69,7 +69,7 @@ const ValueRow = ({ data }) => {
         break;
       case "FLOAT":
         if (data.valueFloat || data.valueFloat === 0) {
-          setFValue(data.valueFloat);
+          if (!data.allowMultiple) setFValue(data.valueFloat);
           setDValue(String(data.valueFloat));
         } else {
           setDValue("-");
@@ -77,7 +77,7 @@ const ValueRow = ({ data }) => {
         break;
       case "TIME":
         if (data.valueTime) {
-          setFValue(data.valueTime);
+          if (!data.allowMultiple) setFValue(data.valueTime);
           setDValue(data.valueTime);
         } else {
           setDValue("-");
@@ -85,10 +85,10 @@ const ValueRow = ({ data }) => {
         break;
       case "BOOL":
         if (data.valueBool === true) {
-          setFValue(true);
+          if (!data.allowMultiple) setFValue(true);
           setDValue("Yes");
         } else if (data.valueBool === false) {
-          setFValue(false);
+          if (!data.allowMultiple) setFValue(false);
           setDValue("No");
         } else {
           setDValue("-");
@@ -101,7 +101,7 @@ const ValueRow = ({ data }) => {
 
   return (
     <div className="grid" style={{ textAlign: "left" }}>
-      <div>{data.attr}</div>
+      <div>{data.attr} {data.allowMultiple && "(+)"}</div>
       {isEditing ? (
         <div className="value-field-container">
           {data.valueType === "STR" && <input type="text" value={fvalue} onChange={handleInput} />}
@@ -110,7 +110,7 @@ const ValueRow = ({ data }) => {
           {data.valueType === "TIME" && <input type="datetime-local" value={fvalue} onChange={handleInput} />}
           {data.valueType === "BOOL" && <input type="checkbox" checked={fvalue} onChange={handleCheck} />}
           <div style={{ flexGrow:1 }}></div>
-          <button onClick={submitValue}>Add</button>
+          <button onClick={submitValue}>{data.allowMultiple ? "Add" : "Update"}</button>
           <button onClick={() => setIsEditing(false)}>Cancel</button>
         </div>
       ) : (
