@@ -11,6 +11,13 @@ const FormModal = () => {
   const [title, setTitle] = useState("");
   const [err, setErr] = useState("");
 
+  function close() {
+    setFields({});
+    setTitle("");
+    setErr("");
+    dispatch(closeForm());
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
     if (!activeEnType) return setErr("No active tab");
@@ -27,6 +34,7 @@ const FormModal = () => {
       if (!regex.test(form.attr)) return setErr("Attribute name only accepts a-z, 0-9, -, _");
       dispatch(addAttribute(form));
     }
+    close();
   }
 
   function handleInput(e) {
@@ -39,13 +47,6 @@ const FormModal = () => {
     const { name, checked } = e.target;
     setFields(prev => ({ ...prev, [name]: checked }));
     setErr("");
-  }
-
-  function close() {
-    setFields({});
-    setTitle("");
-    setErr("");
-    dispatch(closeForm());
   }
 
   useEffect(() => {

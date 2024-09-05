@@ -51,6 +51,7 @@ public class EavValue {
     }
 
     public void setValueTime(Instant i) {
-        valueTime = i.toString();
+        if (i == null) valueTime = null;
+        else valueTime = i.toString();
     }
 }

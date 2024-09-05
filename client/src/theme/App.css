@@ -230,6 +230,27 @@ nav a:hover {
   padding: 0.5em 1em;
 }
 
+.value-display-container {
+  cursor: pointer;
+  padding: 0.2em 0.5em;
+}
+
+.value-display-container:hover {
+  background-color: #6692c4;
+}
+
+.value-field-container {
+  display: flex;
+  padding: 0.2em 0.5em;
+  margin: 0.2em 0;
+}
+
+.value-field-container input {
+  padding: 0;
+  margin: 0;
+  max-width: 30em;
+}
+
 /* ---- EAV FORM ---- */
 .modal-container {
   position: absolute;

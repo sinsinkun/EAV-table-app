@@ -148,7 +148,7 @@ public class EavInterface {
     }
 
     public EavEntity updateEntity(EavEntity updated) {
-        String query = "UPDATED " + entityTable + " SET entity = :entity WHERE id = :id";
+        String query = "UPDATE " + entityTable + " SET entity = :entity WHERE id = :id";
         conn.createQuery(query)
                 .addParameter("entity", updated.getEntity())
                 .addParameter("id", updated.getId())
@@ -248,7 +248,7 @@ public class EavInterface {
     }
 
     public EavAttribute updateAttribute(EavAttribute updated) {
-        String query = "UPDATED " + attributeTable + " SET value_type = :vt, allow_multiple = :am WHERE id = :id";
+        String query = "UPDATE " + attributeTable + " SET value_type = :vt, allow_multiple = :am WHERE id = :id";
         conn.createQuery(query)
                 .addParameter("vt", updated.getValueType())
                 .addParameter("am", updated.isAllowMultiple())
@@ -372,7 +372,7 @@ public class EavInterface {
     }
 
     public EavValue updateValue(EavValue updated) {
-        String query = "UPDATED " + valueTable + " SET " +
+        String query = "UPDATE " + valueTable + " SET " +
                 " value_str = :v1, value_int = :v2, value_float = :v3, value_time = :v4, value_bool = :v5 " +
                 "WHERE id = :id";
         conn.createQuery(query)

@@ -112,6 +112,49 @@ export const addEntity = createAsyncThunk(
   }
 )
 
+export const addValue = createAsyncThunk(
+  'eav/addValue',
+  async (input, { rejectWithValue }) => {
+    try {
+      const { entityId, attrId } = input;
+      if (!entityId || !attrId) throw new Error("Missing required inputs");
+      const res = await fetch("http://localhost:4000/value", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(input),
+      }).then(x => x.json());
+      return res;
+    } catch (e) {
+      console.error("API failed -", e);
+      return rejectWithValue(null);
+    }
+  }
+)
+
+export const updateValue = createAsyncThunk(
+  'eav/updateValue',
+  async (input, { rejectWithValue }) => {
+    try {
+      const { valueId, valueStr, valueInt, valueFloat, valueTime, valueBool } = input;
+      if (!valueId) throw new Error("Missing required inputs");
+      const body = { id: valueId, valueStr, valueInt, valueFloat, valueTime, valueBool };
+      const res = await fetch("http://localhost:4000/value", {
+        method: "PUT",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      }).then(x => x ? x.json() : {});
+      return res;
+    } catch (e) {
+      console.error("API failed -", e);
+      return rejectWithValue(null);
+    }
+  }
+)
+
 export const eavSlice = createSlice({
   name: 'eav',
   initialState: {
@@ -210,6 +253,38 @@ export const eavSlice = createSlice({
       state.loading = false;
       state.entities.push(action.payload);
     }).addCase(addEntity.rejected, (state) => {
+      state.loading = false;
+    });
+    builder.addCase(addValue.pending, (state) => {
+      state.loading = true;
+    }).addCase(addValue.fulfilled, (state, action) => {
+      state.loading = false;
+      if (action.payload.allowMultiple) {
+        state.values.push(action.payload);
+      } else {
+        const attrId = action.payload.attrId;
+        const entityId = action.payload.attrId;
+        state.values.forEach(v => {
+          if (v.attrId === attrId && v.entityId === entityId) {
+            v.valueId = action.payload.id;
+            v.createdAt = action.payload.createdAt;
+            v.valueStr = action.payload.valueStr;
+            v.valueInt = action.payload.valueInt;
+            v.valueFloat = action.payload.valueFloat;
+            v.valueTime = action.payload.valueTime;
+            v.valueBool = action.payload.valueBool;
+          }
+        });
+      }
+    }).addCase(addValue.rejected, (state) => {
+      state.loading = false;
+    });
+    builder.addCase(updateValue.pending, (state) => {
+      state.loading = true;
+    }).addCase(updateValue.fulfilled, (state, value) => {
+      state.loading = false;
+      // todo: update existing value
+    }).addCase(updateValue.rejected, (state) => {
       state.loading = false;
     });
   }
