@@ -37,3 +37,5 @@ built for the SQL EAV system created through the SQL script.
 ## Web Client
 
 Basic vite/react application for interfacing with the java API.
+
+<img src="./client/public/screenshot.png" width="600px" />
