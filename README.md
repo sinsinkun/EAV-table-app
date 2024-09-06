@@ -39,3 +39,11 @@ built for the SQL EAV system created through the SQL script.
 Basic vite/react application for interfacing with the java API.
 
 <img src="./client/public/screenshot.png" width="600px" />
+
+## Build Instructions
+
+In order for the launch.bat file to work, the java and the react project must be built.
+- In intellij maven tab -> Lifecycle -> package
+- `cd /client && npm run build`
+
+Note: launch_dev.bat requires the java project to be built as well
